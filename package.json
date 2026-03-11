@@ -1,0 +1,25 @@
+{
+  "name": "",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently \"astro dev\" \"nodemon -L --watch 'src/photo/**' --ext 'jpg,jpeg,png,gif' --exec 'node image-exif.js'\"",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "astro": "^6.0.2",
+    "concurrently": "^9.1.2",
+    "exifreader": "^4.26.1",
+    "nodemon": "^3.1.9",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19"
+  }
+}

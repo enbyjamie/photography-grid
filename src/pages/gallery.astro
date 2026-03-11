@@ -1,0 +1,144 @@
+---
+import { Picture } from 'astro:assets';
+import imageData from '../image-data.json';
+
+import "/src/styles/global.css";
+
+const allImages = import.meta.glob<{ default: ImageMetadata }>('../photo/*.{jpg,jpeg,png,gif}', { eager: true });
+
+interface ExifField {
+  value?: any;
+  description?: string | number;
+}
+
+interface ImageData {
+  [key: string]: {
+    Make?: ExifField;
+    Model?: ExifField;
+    LensModel?: ExifField;
+    Lens?: ExifField;
+    FocalLength?: ExifField;
+    ExposureTime?: ExifField;
+    ShutterSpeedValue?: ExifField;
+    ISOSpeedRatings?: ExifField;
+    ApertureValue?: ExifField;
+    [key: string]: any;
+  };
+}
+
+const dataByFilename: Record<string, any> = {};
+const typedImageData: ImageData = imageData;
+
+Object.keys(typedImageData).forEach(fullPath => {
+    const filename = fullPath.split('/').pop(); 
+    if (filename) {
+        dataByFilename[filename] = typedImageData[fullPath];
+    }
+});
+
+const imageList = Object.keys(allImages).map(path => {
+    const imageModule = allImages[path];
+    const fileName = path.split('/').pop() || ''; 
+    const slug = fileName.split('.')[0];          
+
+    return {
+        src: imageModule.default,
+        slug: slug,
+        fileName: fileName, 
+    };
+});
+---
+
+<ul class="grid grid-cols-2 lg:grid-cols-3 gap-[1rem] p-0 list-none">
+    {
+        imageList.map((image) => {
+            const exif = dataByFilename[image.fileName];
+            
+            const make = exif?.Make?.description || '';
+            const model = exif?.Model?.description || '';
+            const camera = `${model}`.trim() || 'Unknown Camera';
+
+            const lens = exif?.LensModel?.value || exif?.Lens?.value || 'Unknown Lens';
+
+            const iso = exif?.ISOSpeedRatings?.description || exif?.ISOSpeedRatings?.value || '';
+            const focalLength = exif?.FocalLength?.description || '';
+            
+            const shutter = exif?.ExposureTime?.description || exif?.ShutterSpeedValue?.description || '';
+
+            const aperture = exif?.ApertureValue?.description;
+
+            // Fallback description
+            const description = image.slug.replace(/_/g, ' ');
+
+            return (
+            <li class="m-0 bg-gray-400 rounded-2xl truncate shadow-xl m-3">
+                <a href={`/photo/${image.slug}/`}>
+                    <figure>
+                        <div class="pb-2">
+                            <Picture 
+                                class="w-full h-auto block object-cover -mt-0"
+                                src={image.src}
+                                formats={['avif', 'webp']}
+                                alt={description} 
+                                width={800} 
+                            />
+                        </div>
+                        
+                        <figcaption class="p-[16px] font-sans">
+                            <span class="font-bold mb-6px text-2xl text-white">{description}</span>
+                            
+                            <dl class="m-0 exif-data">
+                                <div><dt>Camera</dt> <dd>{camera}</dd></div>
+                                <div><dt>Lens</dt> <dd>{lens}</dd></div>
+                                <div class="photo-details sm:text-base text-xs">
+                                    {focalLength && <span>{focalLength}</span>}
+                                    {shutter && <span>{shutter}s</span>}
+                                    {iso && <span>ISO {iso}</span>}
+                                    {aperture && <span>f/{aperture.slice(0, -1)}</span>}
+                                </div>
+                            </dl>
+                        </figcaption>
+                    </figure>
+                </a>
+            </li>
+            );
+        })
+    }
+</ul>
+
+<style>
+
+    img {
+        margin-block: 0 !important;
+    }
+
+    .exif-data div {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.25rem;
+        font-family: InterVariable, sans-serif;
+    }
+
+    .exif-data dt {
+        font-weight: 600;
+        color: #d4d4d4;
+    }
+
+    .exif-data dd {
+        margin: 0;
+        text-align: right;
+        color: #d4d4d4;
+    }
+
+    .photo-details {
+        margin-top: 0.75rem;
+        display: flex;
+        justify-content: flex-start !important; /* Override space-between */
+        gap: 0.75rem;
+        font-weight: bold;
+        color: #5b5b5b;
+        background: #e6e6e6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+</style>
