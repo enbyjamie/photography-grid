@@ -90,7 +90,7 @@ const imageList = Object.keys(allImages).map(path => {
                             <dl class="m-0 exif-data">
                                 <div><dt>Camera</dt> <dd>{camera}</dd></div>
                                 <div><dt>Lens</dt> <dd>{lens}</dd></div>
-                                <div class="photo-details sm:text-base text-xs">
+                                <div class="text-gray-100 bg-gray-500 rounded-xl px-[1rem] py-[0.4rem] flex justify-start sm:text-base text-xs">
                                     {focalLength && <span>{focalLength}</span>}
                                     {shutter && <span>{shutter}s</span>}
                                     {iso && <span>ISO {iso}</span>}
@@ -130,15 +130,4 @@ const imageList = Object.keys(allImages).map(path => {
         color: #d4d4d4;
     }
 
-    .photo-details {
-        margin-top: 0.75rem;
-        display: flex;
-        justify-content: flex-start !important; /* Override space-between */
-        gap: 0.75rem;
-        font-weight: bold;
-        color: #5b5b5b;
-        background: #e6e6e6;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-    }
 </style>
