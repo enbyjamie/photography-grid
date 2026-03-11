@@ -49,7 +49,7 @@ const imageList = Object.keys(allImages).map(path => {
 });
 ---
 
-<ul class="grid grid-cols-2 lg:grid-cols-3 gap-[1rem] p-0 list-none">
+<ul class="grid grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 gap-[1rem] p-0 list-none">
     {
         imageList.map((image) => {
             const exif = dataByFilename[image.fileName];
